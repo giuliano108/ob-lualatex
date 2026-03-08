@@ -1,0 +1,76 @@
+#+OPTIONS: toc:nil
+* ~ob-lualatex.el~
+
+Org Babel support for =lualatex= source blocks.
+
+Why?
+- The main purpose of this is to inline TikZ images in org files.
+- I find working with fonts to be much easier with lualatex.
+- Org seems to support =lualatex= only when /exporting/ org files.
+  For my use case, which is using Babel to turn LaTeX/TikZ snippets
+  into (inline) images via lualatex, I couldn't get stock Org to work.
+
+Notes:
+- The code is mostly copied from [[https://github.com/arnm/ob-mermaid/][ob-mermaid]].
+- I've had some help from AI, caveat emptor
+
+** Requirements
+
+- [[https://www.tug.org/texlive/][LuaLaTeX]] (=lualatex= in =$PATH=)
+- [[https://imagemagick.org/][ImageMagick]] (=magick= in =$PATH=)
+
+** Installation (Doom Emacs)
+
+=packages.el=:
+#+begin_src elisp
+(package! ob-lualatex
+  :recipe (:host github :repo "giuliano108/ob-lualatex"))
+#+end_src
+
+=config.el=:
+#+begin_src elisp
+(use-package! ob-lualatex
+  :defer t
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((lualatex . t))))
+#+end_src
+
+** Header arguments
+
+| Argument    | Default     | Description                  |
+|-------------+-------------+------------------------------|
+| =:file=       | n/a         | Output PNG name (required)   |
+| =:density=    | =200=         | ImageMagick =-density= value   |
+| =:background= | =transparent= | ImageMagick background color |
+
+Any color accepted by ImageMagick works for =:background= — named colors
+(=white=, =black=, …), hex (=#ffffff=), =rgb(r,g,b)=, etc. Run =magick -list
+color= for the full list of named colors.
+
+[[https://orgmode.org/manual/Noweb-Reference-Syntax.html][Noweb syntax]] works.
+ 
+** Example
+
+#+begin_src lualatex :file example.png :background white
+\documentclass[border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows.meta,positioning}
+\begin{document}
+\begin{tikzpicture}[
+  box/.style={rectangle, rounded corners, draw=blue!60, fill=blue!5, 
+              thick, minimum height=1cm, minimum width=2.5cm, align=center},
+  font=\sffamily
+]
+  \node[box] (box1) {Isn't {\normalfont Ti{\rmfamily\textit{k}}Z}};  
+  \node[box, right=1cm of box1, fill=green!5, draw=green!60] (box2) {great?};
+  \draw[-{Stealth[length=3mm]}, thick] (box1) -- (box2);
+\end{tikzpicture}
+\end{document}
+#+end_src
+
+#+RESULTS:
+[[file:example.png]]
+
+[[file:./example.png]]
