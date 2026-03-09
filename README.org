@@ -17,7 +17,7 @@ Notes:
 ** Requirements
 
 - [[https://www.tug.org/texlive/][LuaLaTeX]] (=lualatex= in =$PATH=)
-- [[https://imagemagick.org/][ImageMagick]] (=magick= in =$PATH=)
+- [[https://imagemagick.org/][ImageMagick]] (=magick= in =$PATH=, required only for PNG output)
 
 ** Installation (Doom Emacs)
 
@@ -39,11 +39,11 @@ Notes:
 
 ** Header arguments
 
-| Argument    | Default     | Description                  |
-|-------------+-------------+------------------------------|
-| =:file=       | n/a         | Output PNG name (required)   |
-| =:density=    | =200=         | ImageMagick =-density= value   |
-| =:background= | =transparent= | ImageMagick background color |
+| Argument    | Default     | Description                                                      |
+|-------------+-------------+------------------------------------------------------------------|
+| =:file=       | n/a         | Output file (required); extension determines format (png or pdf) |
+| =:density=    | =200=         | ImageMagick =-density= value (PNG only)                            |
+| =:background= | =transparent= | ImageMagick background color (PNG only)                          |
 
 Any color accepted by ImageMagick works for =:background= — named colors
 (=white=, =black=, …), hex (=#ffffff=), =rgb(r,g,b)=, etc. Run =magick -list

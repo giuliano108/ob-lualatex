@@ -16,9 +16,9 @@
 ;; - I've had some help from AI, caveat emptor
 ;;
 ;; Supported header arguments:
-;; :file       - Output PNG file (required)
-;; :density    - ImageMagick -density value (optional, default 200)
-;; :background - ImageMagick background color (optional, default transparent)
+;; :file       - Output file (required); extension determines format (png or pdf)
+;; :density    - ImageMagick -density value (optional, default 200, png only)
+;; :background - ImageMagick background color (optional, default transparent, png only)
 
 ;;; Requirements:
 
@@ -39,6 +39,7 @@
 (defun org-babel-execute:lualatex (body params)
   (let* ((out-file (or (cdr (assoc :file params))
                        (error "lualatex requires a \":file\" header argument")))
+         (ext (file-name-extension out-file))
          (density (cdr (assoc :density params)))
          (background (cdr (assoc :background params)))
          (temp-dir (make-temp-file "ob-lualatex-" t))
@@ -69,7 +70,10 @@
                (buffer-string))
            "(no log file produced)"))
         (error "lualatex failed")))
-    (org-babel-eval magick-cmd "")
+    (cond
+     ((string= ext "pdf") (copy-file pdf-file out-file t))
+     ((string= ext "png") (org-babel-eval magick-cmd ""))
+     (t (warn "ob-lualatex: unsupported extension \"%s\" in :file; expected png or pdf" ext)))
     nil))
 
 (provide 'ob-lualatex)
